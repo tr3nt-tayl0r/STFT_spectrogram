@@ -34,7 +34,7 @@ def upload_file():
 
             # Load signal using soundfile and librosa
             signal, sr = sf.read(filepath)  # https://python-soundfile.readthedocs.io/en/0.13.1/
-            if signal.ndim > 1:
+            if signal.ndim > 1:         # make into mono signal, if stereo
                 signal = signal[:, 0]
 
             fs = sr  # `sr` is "sample rate" and `fs` is "sample frequency"
@@ -69,15 +69,14 @@ def upload_file():
             axs[0].set_ylabel("Amplitude") 
 
             # FFT
+            # limit the x-axis to 4096 hz because of freq limitations of guitar input signal
             freq_limit = 4096
-            mask = fft_freqs[:len(signal) // 2] <= freq_limit
-            # limit the x-axis to 5000 hz because of freq limitations of guitar input signal
+            mask = fft_freqs[:len(signal) // 2] <= freq_limit            
             axs[1].stem(
                 fft_freqs[:len(signal) // 2][mask],
                 np.abs(fft_vals)[:len(signal) // 2][mask],
                 basefmt=" "
             )
-            #axs[1].stem(fft_freqs[:len(signal) // 2], np.abs(fft_vals)[:len(signal) // 2], basefmt=" ")  
             axs[1].set_title("FFT - Frequency Spectrum")
             axs[1].set_xlabel("Frequency [Hz]")
             axs[1].set_ylabel("Magnitude")
